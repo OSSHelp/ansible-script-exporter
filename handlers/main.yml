@@ -1,0 +1,10 @@
+---
+
+- name: reload script_exporter unit
+  systemd:
+    daemon_reload: true
+
+- name: restart script_exporter service
+  systemd:
+    name: "{{ script_exporter_service_name }}"
+    state: restarted

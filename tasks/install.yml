@@ -1,0 +1,52 @@
+---
+
+- name: create user
+  user:
+    name: "{{ script_exporter_user_name }}"
+    home: "/nonexistent"
+    create_home: no
+    shell: "/bin/false"
+    system: yes
+
+- name: check if binary file exists
+  stat:
+    path: "{{ script_exporter_dirs.binary_dir }}/{{ script_exporter_binary_name }}"
+  register: binary_file
+
+- name: "download binary to {{ script_exporter_dirs.binary_dir }}"
+  get_url:
+    url: "{{ script_exporter_binary_url }}"
+    dest: "{{ script_exporter_dirs.binary_dir }}/{{ script_exporter_binary_name }}"
+    owner: root
+    group: root
+    mode: 0755
+  when: not binary_file.stat.exists
+
+- name: create systemd unit
+  template:
+    src: systemd-unit.j2
+    dest: "{{ script_exporter_systemd_unit }}"
+  notify:
+    - reload script_exporter unit
+    - restart script_exporter service
+
+- name: ensure that configuration directory exists
+  file:
+    path: "{{ script_exporter_dirs.config_dir }}"
+    state: directory
+
+- name: create exporter configuration file
+  template:
+    src: exporter-cfg.j2
+    dest: "{{ script_exporter_dirs.config_dir }}/{{ script_exporter_config_file }}"
+    owner: root
+    group: "{{ script_exporter_user_name }}"
+    mode: 0640
+  notify: restart script_exporter service
+
+- meta: flush_handlers
+
+- name: enable service
+  systemd:
+    name: "{{ script_exporter_service_name }}"
+    enabled: true

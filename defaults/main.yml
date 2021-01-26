@@ -1,0 +1,22 @@
+---
+
+script_exporter_setup: full
+
+script_exporter_version: "2.2.0"
+script_exporter_binary_url: "https://github.com/ricoberger/script_exporter/releases/download/v{{ script_exporter_version }}/script_exporter-linux-amd64"
+
+script_exporter_config_file: script_exporter.yml
+script_exporter_binary_name: script_exporter
+script_exporter_user_name: script_exporter
+script_exporter_service_name: script_exporter
+script_exporter_systemd_unit: "/etc/systemd/system/{{ script_exporter_service_name }}.service"
+script_exporter_dirs:
+  binary_dir: /usr/local/bin
+  config_dir: /usr/local/etc/script_exporter
+
+script_exporter_params:
+  listen_address: ':9469'
+  timeout_offset: 0.5
+
+script_exporter_scripts:
+  - { name: "test", path: "/path/to/script", sudo: false }

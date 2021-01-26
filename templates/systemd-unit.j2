@@ -1,0 +1,27 @@
+[Unit]
+Description=script exporter
+
+[Service]
+Type=forking
+User={{ script_exporter_user_name }}
+Group={{ script_exporter_user_name }}
+RuntimeDirectory=script_exporter
+RuntimeDirectoryMode=0755
+{% if ansible_distribution_release == 'focal' %}
+PIDFile=/run/script_exporter/pid
+{% else %}
+PIDFile=/var/run/script_exporter/pid
+{% endif %}
+ExecStart=/sbin/start-stop-daemon -Sbmp /var/run/script_exporter/pid -x {{ script_exporter_dirs.binary_dir }}/script_exporter -- \
+    -web.listen-address="{{ script_exporter_params.listen_address }}" \
+    -timeout-offset={{ script_exporter_params.timeout_offset }} \
+    -config.file={{ script_exporter_dirs.config_dir }}/{{ script_exporter_config_file }}
+
+Restart=always
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=script_exporter
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+tls:
+  enabled: false
+
+basicAuth:
+  enabled: false
+
+bearerAuth:
+  enabled: false
+
+{% if script_exporter_scripts is defined and script_exporter_scripts|length %}
+scripts:
+{% for script in script_exporter_scripts %}
+  - name: {{ script.name }}
+    script: '{% if script.sudo %}sudo {% endif %}{{ script.path }}'
+{% endfor %}
+{% endif %}

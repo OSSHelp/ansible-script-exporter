@@ -1,0 +1,9 @@
+{% if script_exporter_scripts is defined and script_exporter_scripts|length %}
+{% for script in script_exporter_scripts %}
+{% if script.sudo %}
+{% if script.path is defined and script.path|length %}
+{{ script_exporter_user_name }} ALL=(root)NOPASSWD: {{ script.path }}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}

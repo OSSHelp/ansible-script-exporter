@@ -1,0 +1,14 @@
+---
+
+- name: gather required facts
+  setup:
+    gather_subset: [min]
+  when: ansible_distribution_release is not defined
+
+- name: install
+  include_tasks: install.yml
+  when: script_exporter_setup == "full" or script_exporter_setup == "install"
+
+- name: configure
+  import_tasks: configure.yml
+  when: script_exporter_setup == "full" or script_exporter_setup == "configure"
